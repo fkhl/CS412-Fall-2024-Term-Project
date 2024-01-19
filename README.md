@@ -372,4 +372,5 @@ Finally, we plot the results.
 
 Fatma Khalil (29999): Prompt matching and debugging </br>
 Muhammed Abdulrahman (30043): Feature Extraction and model training </br>
-Taneera Tajammul (29572): Experimenting and Model tesing </br>
+Taneera Tajammul (29572): Experimenting and Model testing </br>
+Emir Asal (27933): Features and correlations, improving the model and bug fixing </br>
