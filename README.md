@@ -6,6 +6,8 @@ For this project, we tried to improve the base code given to us. In the base cod
 
 We also used two different models, XGBoost and random forest and linear regression with Lasso regression. The base code uses decision trees, so we decided to use models with a similar idea.
 
+
+# For CS412 Term Project (first version)
 ## 1 - Prompt matching with questions
 Instead of term frequency–inverse document frequency (tf-idf) we use word2vec for feature extraction. 
 #### 1.1.
@@ -375,6 +377,130 @@ for i, alpha in enumerate(alphas):
 ```
 Then we  print a table of alpha values along with their corresponding adjusted R-squared (adjusted R2) and Root Mean Squared Error (RMSE) values for Lasso regression. This code provides a clear output of the performance metrics (adjusted R2 and RMSE) for different alpha values in Lasso regression. This information is useful for selecting an appropriate alpha value that balances model complexity and performance on the testing set.
 Finally, we plot the results.
+
+# For CS412 Fall 2024 Term Project Version 2
+
+## 1 - Prompt Matching
+
+#### 1.1 Using BERT
+
+```
+# Step 1: Extract text from HTML files
+html_files_path = '/content/dataset/*.html'
+extracted_prompts = []
+
+for html_file in tqdm(glob(html_files_path)):
+    with open(html_file, 'r', encoding='utf-8') as file:
+        soup = BeautifulSoup(file, 'html.parser')
+        texts = [p.get_text(strip=True) for p in soup.find_all('p')]
+        extracted_prompts.extend(texts)
+
+# Step 2: Extract homework questions from .ipynb file
+notebook_path = '/content/Assignment.ipynb'
+extracted_homework_questions = []
+
+with open(notebook_path, 'r', encoding='utf-8') as f:
+    notebook = nbformat.read(f, as_version=4)
+
+for cell in notebook['cells']:
+    if cell['cell_type'] == 'markdown':
+        if cell['source'].startswith('Question'):
+            extracted_homework_questions.append(cell['source'])
+```
+Here we are extracting the HTML foles and the homework questions from the .ipynb file itself by using BeautifulSoup for the HTML files and only checking markup cells in the homework .ipynb file for the questions. Both the prompts and questions are placed in their respective list.</br>
+
+
+```
+# Function to encode text using BERT
+def encode_text(text, tokenizer, model):
+    inputs = tokenizer(text, padding=True, truncation=True, max_length=512, return_tensors="pt")
+    outputs = model(**inputs)
+    return outputs.last_hidden_state.mean(dim=1).squeeze().detach().cpu().numpy()
+
+# Load pre-trained BERT model and tokenizer
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+model = BertModel.from_pretrained('bert-base-uncased')
+
+# If you're running this in a local setup and not in a hosted environment with a GPU,
+# you should add the following line to tell PyTorch to use the CPU.
+model = model.to('cpu')
+
+# Step 3: Encode prompts and homework questions with BERT
+prompts_embeddings = np.array([encode_text(prompt, tokenizer, model) for prompt in extracted_prompts])
+questions_embeddings = np.array([encode_text(question, tokenizer, model) for question in extracted_homework_questions])
+
+# Step 4: Calculate cosine similarity between prompts and homework questions
+similarity_matrix = np.array([[1 - cosine(p, q) for q in questions_embeddings] for p in prompts_embeddings])
+
+# Step 5: Find the best matching homework question for each prompt
+for i, prompt in enumerate(extracted_prompts):
+    best_match_idx = np.argmax(similarity_matrix[i])
+    print(f"Prompt: {prompt}")
+    print(f"Best matching homework question: {extracted_homework_questions[best_match_idx]}")
+    print(f"Similarity score: {similarity_matrix[i][best_match_idx]}")
+    print("\n")
+```
+
+Here we are using a tokenizer to encode the text we have. The tokenizer being used in BERT with an already pretrained model. </br>
+Then we are turning the prompts and questions into np arrays, this allows us to encode the prompts and the questions. By doing so, we can calculate the cosine similarity between the prompts and the questions. The concept behing using it is the same as the first file. </br>
+Finally we loop through the prompts and match them to the questions by finding the highest similarity.
+
+#### 1.2 Using Sentence-Transformers
+
+```
+# Load a pre-trained Sentence Transformer model
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
+# Function to encode texts to get sentence embeddings with batching
+def encode_texts(texts, model, batch_size=32):
+    embeddings = []
+    for start_index in tqdm(range(0, len(texts), batch_size), desc="Encoding"):
+        texts_batch = texts[start_index:start_index+batch_size]
+        embeddings_batch = model.encode(texts_batch, convert_to_numpy=True, show_progress_bar=False)
+        embeddings.append(embeddings_batch)
+    return np.vstack(embeddings)
+
+def extract_questions_from_notebook(notebook_path):
+    with open(notebook_path, 'r', encoding='utf-8') as f:
+        notebook = nbformat.read(f, as_version=4)
+    extracted_questions = []
+    for cell in notebook['cells']:
+        if cell['cell_type'] == 'markdown':
+            cell_text = cell['source']
+            # Add the whole cell text as one question, removing any leading/trailing whitespace
+            extracted_questions.append(cell_text.strip())
+    return extracted_questions
+
+# Extract text from HTML files
+html_files_path = '/content/dataset/*.html'
+extracted_prompts = []
+for html_file in tqdm(glob(html_files_path), desc='Extracting prompts'):
+    with open(html_file, 'r', encoding='utf-8') as file:
+        soup = BeautifulSoup(file, 'html.parser')
+        texts = [p.get_text(strip=True) for p in soup.find_all('p')]
+        extracted_prompts.extend(texts)
+
+# Extract homework questions from .ipynb file
+notebook_path = '/content/Assignment.ipynb'
+extracted_homework_questions = extract_questions_from_notebook(notebook_path)
+
+# Encode the prompts and homework questions
+prompts_embeddings = encode_texts(extracted_prompts, model)
+questions_embeddings = encode_texts(extracted_homework_questions, model)
+
+# Calculate cosine similarity between prompts and homework questions
+similarity_matrix = cosine_similarity(prompts_embeddings, questions_embeddings)
+
+# Find the best matching homework question for each prompt
+for i, prompt_embedding in enumerate(prompts_embeddings):
+    best_match_idx = np.argmax(similarity_matrix[i])
+    print(f"Prompt: {extracted_prompts[i]}")
+    print(f"Best matching homework question: {extracted_homework_questions[best_match_idx]}")
+    print(f"Similarity score: {similarity_matrix[i][best_match_idx]}")
+    print("\n")
+```
+
+Here we are using a less computationally expensive model to perform the same task above. The difference is that instead of using a tokenizer, we are using sentence embeddings with batching. For this reason, the code is similar except where the transformer was used.
 
 ### Contributions
 
