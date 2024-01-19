@@ -370,6 +370,6 @@ Finally, we plot the results.
 
 ### Contributions
 
-Fatma Khalil (29999): Prompt matching and debugging
-Muhammed Abdulrahman (30043): Feature Extraction and model training
-Taneera Tajammul (29572): Experimenting and Model tesing
+Fatma Khalil (29999): Prompt matching and debugging </br>
+Muhammed Abdulrahman (30043): Feature Extraction and model training </br>
+Taneera Tajammul (29572): Experimenting and Model tesing </br>
