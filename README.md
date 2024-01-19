@@ -1,4 +1,11 @@
-# Feature Extraction
+# Methodology
+
+To conduct the project, we simply tried to improve the basecode; as it already implements the simplest method to perform the project. Some parts of the basecode were left unchanged as we felt changing them would not improve the result.
+The baseline code uses tf_idf methods in order to perform prompt matching. We decided to use embedded word models (word2vec was used) instead. The idea behind using embedded word models is that the prompts with most similarity will match to the question, and the prompts that have low similarity to the questions will not be matched.
+
+We noticed that the baseline code uses decision trees as the selected model. We decided to go with a similar approach. Instead of using regular decision trees we used XGBoost, which is a complex decision tree with extreme gradient boosting. We also used an alternative method, which is random forest and linear regression with Lasso regression.
+
+# Prompt Matching and Feature Extraction
 
 ## Instead of term frequency–inverse document frequency (tf-idf) we use word2vec for feature extraction. 
 
