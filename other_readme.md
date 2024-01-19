@@ -367,3 +367,9 @@ for i, alpha in enumerate(alphas):
 ```
 Then we  print a table of alpha values along with their corresponding adjusted R-squared (adjusted R2) and Root Mean Squared Error (RMSE) values for Lasso regression. This code provides a clear output of the performance metrics (adjusted R2 and RMSE) for different alpha values in Lasso regression. This information is useful for selecting an appropriate alpha value that balances model complexity and performance on the testing set.
 Finally, we plot the results.
+
+### Contributions
+
+Fatma Khalil (29999): Prompt matching and debugging
+Muhammed Abdulrahman (): Feature Extraction and model training
+Taneera Tajammul (): Experimenting and Model tesing
