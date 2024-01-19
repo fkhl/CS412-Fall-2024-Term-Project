@@ -127,26 +127,26 @@ for code, convs in code2convos.items():
 ```
 
 ###### 2.2.1. Initialization
-	We initialize a defaultdict of defaultdict named code2features to store 			features for each code. This data structure is used to store counts related to user 		prompts and ChatGPT responses.
+We initialize a defaultdict of defaultdict named code2features to store features for each code. This data structure is used to store counts related to user prompts and ChatGPT responses.
 
 ###### 2.2.2. Iterating Through Codes and Conversations:
-	Then it iterates through each code and its corresponding conversations (convs) in the 		code2convos dictionary.
+Then it iterates through each code and its corresponding conversations (convs) in the code2convos dictionary.
 
 ###### 2.2.3. Counting User Prompts:
-	For each user prompt in the conversations, it increments the count of user prompts 		(#user_prompts) for the respective code.
+For each user prompt in the conversations, it increments the count of user prompts (#user_prompts) for the respective code.
 
 
 ###### 2.2.4. Counting Keyword Occurrences:
-	For each user prompt, we count the occurrences of keywords from the 				keywords2search list using regular expressions.
+For each user prompt, we count the occurrences of keywords from the keywords2search list using regular expressions.
 
 ###### 2.2.5. Calculating Average Characters:
-	Keep track of the total number of characters in both user prompts 				(prompt_avg_chars) and ChatGPT responses (response_avg_chars). It later calculates the 		average characters for both.
+Keep track of the total number of characters in both user prompts (prompt_avg_chars) and ChatGPT responses (response_avg_chars). It later calculates the average characters for both.
 
 ###### 2.2.6. Printing Codes with No Conversations:
-	If there are no conversations (convs) for a particular code, it prints the code to 		the console.
+If there are no conversations (convs) for a particular code, it prints the code to the console.
 
 ###### 2.2.7. Normalization of Average Characters:
-	Finally we normalize the average characters for user prompts and ChatGPT responses by 		dividing the total characters by the number of user prompts.
+Finally we normalize the average characters for user prompts and ChatGPT responses by dividing the total characters by the number of user prompts.
 
 
 
