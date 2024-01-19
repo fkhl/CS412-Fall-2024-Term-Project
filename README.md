@@ -1,3 +1,11 @@
+## Methodology
+
+We have two files in this repository to represent two different approaches we took. Both of the files are our project submission.
+
+For this project, we tried to improve the base code given to us. In the base code, tf_idf was used for prompt matching. In our implementation, we've used embedded word models (word2vec in our case) for that. We used embedded word model as we thought it was more suitable as the model would match the prompt to the most similar question.
+
+We also used two different models, XGBoost and random forest and linear regression with Lasso regression. The base code uses decision trees, so we decided to use models with a similar idea.
+
 ## 1 - Prompt matching with questions
 Instead of term frequency–inverse document frequency (tf-idf) we use word2vec for feature extraction. 
 #### 1.1.
